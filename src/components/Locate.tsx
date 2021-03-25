@@ -2,16 +2,16 @@ import React, { useEffect } from "react";
 import APIMap from "@arcgis/core/Map";
 import APILocate from "@arcgis/core/widgets/Locate";
 import APIMapView from "@arcgis/core/views/MapView";
-import Locate from "@arcgis/core/widgets/Locate";
+// import Locate from "@arcgis/core/widgets/Locate";
 
 interface ILocate {
     map?: APIMap;
     mapView?: APIMapView;
     position?: __esri.UIAddPosition;
     onLocate?: __esri.LocateLocateEventHandler;
-    setLocate?: (locate: Locate) => void;
+    setLocate?: (locate: APILocate) => void;
 }
-const FeatureLayer: React.FC<ILocate> = ({
+const Locate: React.FC<ILocate> = ({
     map,
     mapView,
     position,
@@ -36,4 +36,4 @@ const FeatureLayer: React.FC<ILocate> = ({
     return <></>;
 };
 
-export default FeatureLayer;
+export default Locate;

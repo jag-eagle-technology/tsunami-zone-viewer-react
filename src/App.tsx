@@ -5,15 +5,12 @@ import LightGreyBasemap from "./components/BaseMap";
 import Point from "@arcgis/core/geometry/Point";
 import FeatureLayer from "./components/FeatureLayer";
 import Locate from "./components/Locate";
+import Search from "./components/Search";
 import TsunamiQueryHandler from "./components/TsunamiQueryHandler";
-import TsunamiFeatureLayer, {
-    IFeatureLayerZoneMapping,
-} from "./components/TsunamiFeatureLayer";
+import TsunamiFeatureLayer from "./components/TsunamiFeatureLayer";
 import { ReactComponent as InfoIcon } from "./icons/info.svg";
-
 import WarningModal from "./components/WarningModal";
 import WellingtonWarningTemplate from "./components/WarningTemplates/WellingtonWarningTemplate";
-import { NONAME } from "node:dns";
 
 const App: React.FC = () => {
     const [zoneTitle, setZoneTitle] = useState<string>();
@@ -26,6 +23,8 @@ const App: React.FC = () => {
     const [inZone, setInZone] = useState<boolean>(false);
     const [querying, setQuerying] = useState<boolean>(false);
     const [alertModalShowing, setAlertModalShowing] = useState<boolean>(false);
+    const [address, setAddress] = useState<string>();
+    const searchDivRef = React.useRef<HTMLDivElement>(null);
     const mapCenter = new Point({
         x: 1795999,
         y: 5457405,
@@ -39,6 +38,8 @@ const App: React.FC = () => {
             setAlertModalShowing(true);
         }
     }, [inZone, querying]);
+
+    // configure geocoder for search widget
 
     return (
         <div
@@ -54,6 +55,7 @@ const App: React.FC = () => {
                 title={zoneTitle}
                 body={zoneMessage}
                 BodyTemplate={zoneMessageTemplate}
+                address={address}
                 alertColor={zoneColor}
                 showing={alertModalShowing}
                 setShowing={setAlertModalShowing}
@@ -62,8 +64,10 @@ const App: React.FC = () => {
                 <div
                     style={{
                         display: "flex",
+                        // flex direction should be column for mobile
+                        flexDirection: 'column',
                         backgroundColor: zoneColor,
-                        padding: 10,
+                        padding: '10px',
                         margin: 0,
                         color: "white",
                     }}
@@ -71,7 +75,11 @@ const App: React.FC = () => {
                     <div>
                         <h1 style={{ padding: 0, margin: 0 }}>{zoneTitle}</h1>
                     </div>
-                    <div style={{ marginLeft: "auto" }}>
+                    <div style={{ /* marginLeft: "auto", */ display: "flex" }}>
+                        <div
+                            style={{ marginLeft: "10px", marginRight: '10px', flexGrow: 1 }}
+                            ref={searchDivRef}
+                        ></div>
                         <button
                             style={{
                                 backgroundColor: "transparent",
@@ -88,7 +96,7 @@ const App: React.FC = () => {
                                     width: "25px",
                                     height: "100%",
                                 }}
-                            ></InfoIcon>
+                            />
                         </button>
                     </div>
                 </div>
@@ -104,8 +112,13 @@ const App: React.FC = () => {
                             setZoneColor={setZoneColor}
                             setInZone={setInZone}
                             setQuerying={setQuerying}
+                            setAddress={setAddress}
                         >
                             <Locate position={"top-left"} />
+                            <Search
+                                searchDiv={searchDivRef}
+                                popupEnabled={false}
+                            />
                             <TsunamiFeatureLayer
                                 url='https://mapping.gw.govt.nz/arcgis/rest/services/GW/Emergencies_P/MapServer/23'
                                 warningTemplate={WellingtonWarningTemplate}

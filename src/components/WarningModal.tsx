@@ -8,6 +8,7 @@ interface IWarningModal {
     alertColor: string;
     showing: boolean;
     setShowing: React.Dispatch<React.SetStateAction<boolean>>;
+    address?: string;
 }
 
 const WarningModal: React.FC<IWarningModal> = ({
@@ -17,6 +18,7 @@ const WarningModal: React.FC<IWarningModal> = ({
     showing,
     setShowing,
     BodyTemplate,
+    address
 }) => {
     return showing ? (
         <div
@@ -66,6 +68,7 @@ const WarningModal: React.FC<IWarningModal> = ({
                     {title}
                 </div>
                 <div style={{ padding: 25 }}>
+                    {address && address}
                     {body && body}
                     {BodyTemplate && BodyTemplate}
                 </div>

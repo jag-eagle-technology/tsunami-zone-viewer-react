@@ -5,6 +5,10 @@ import APIFeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import APIPoint from "@arcgis/core/geometry/Point";
 import { IFeatureLayerZoneMapping } from "./TsunamiFeatureLayer";
 import Locate from "@arcgis/core/widgets/Locate";
+import Search from "@arcgis/core/widgets/Search";
+import Point from "@arcgis/core/geometry/Point";
+import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
+import Graphic from "@arcgis/core/Graphic";
 
 interface ITsunamiQueryHandler {
     map?: APIMap;
@@ -18,6 +22,7 @@ interface ITsunamiQueryHandler {
     setZoneColor: React.Dispatch<React.SetStateAction<string>>;
     setInZone: React.Dispatch<React.SetStateAction<boolean>>;
     setQuerying: React.Dispatch<React.SetStateAction<boolean>>;
+    setAddress: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
@@ -30,6 +35,7 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
     setZoneColor,
     setInZone,
     setQuerying,
+    setAddress,
 }) => {
     const clickHandlerRef = React.useRef<IHandle>();
     const [layers, setLayers] = React.useState<APIFeatureLayer[]>([]);
@@ -38,6 +44,13 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
         (IFeatureLayerZoneMapping & { url: string })[]
     >([]);
     const [locate, setLocate] = React.useState<Locate>();
+    const [search, setSearch] = React.useState<Search>();
+    const searchRef = React.useRef<Search>();
+    const sourceRef = React.useRef<"search" | "click" | "locate">();
+    const queryPointGraphicLayerRef = React.useRef<GraphicsLayer>();
+    React.useEffect(() => {
+        searchRef.current = search;
+    }, [search]);
     const addLayer = (featureLayer: APIFeatureLayer) => {
         setLayers((layers) => {
             layersRef.current = [...layers, featureLayer];
@@ -61,8 +74,10 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
                 x: event.x,
                 y: event.y,
             });
-            queryLayers(point, layers);
+            queryLayers(point, layers, "click");
         });
+        queryPointGraphicLayerRef.current = new GraphicsLayer();
+        map?.add(queryPointGraphicLayerRef.current);
     };
     const initTsunamiLocateHandler = () => {
         if (!mapView || !locate) {
@@ -82,17 +97,52 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
             longitude: event.position.coords.longitude,
             latitude: event.position.coords.latitude,
         });
-        queryLayers(locatePoint, layersRef.current);
+        queryLayers(locatePoint, layersRef.current, "locate");
+    };
+    const onSearchResults: __esri.SearchSelectResultEventHandler = (event) => {
+        console.log(event);
+        // attributes include Address, LongLabel, Match_addr
+        setAddress(event.result.feature.attributes.LongLabel);
+        if (!sourceRef.current) {
+            sourceRef.current = "search";
+        }
+        if (sourceRef.current == "search") {
+            const resultGeom = new Point(event.result.feature.geometry);
+            queryLayers(resultGeom, layersRef.current, "search");
+        }
     };
     const queryLayers = async (
         point: __esri.Point,
-        layers: APIFeatureLayer[]
+        layers: APIFeatureLayer[],
+        source: "search" | "click" | "locate"
     ) => {
+        // add in graphic to show queried location on map
         setQuerying(true);
+        sourceRef.current = source;
+        const queryPointSymbol = {
+            type: "simple-marker",
+            color: [226, 119, 40], // Orange
+            outline: {
+                color: [255, 255, 255], // White
+                width: 2,
+            },
+        };
+        queryPointGraphicLayerRef.current?.removeAll();
+        queryPointGraphicLayerRef.current?.add(
+            new Graphic({
+                geometry: point,
+                symbol: queryPointSymbol,
+            })
+        );
         setZoneTitle("Getting info for this location...");
+        if (source != "search") {
+            searchRef.current?.search(point).then(() => {
+                sourceRef.current = undefined;
+            });
+        }
         setZoneMessage(undefined);
         setZoneMessageTemplate(undefined);
-        setZoneColor('rgb(71, 165, 237)');
+        setZoneColor("rgb(71, 165, 237)");
         setInZone(false);
         const query: __esri.QueryProperties = {
             spatialRelationship: "intersects",
@@ -174,7 +224,9 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
                     setLayer: addLayer,
                     setWarningTemplate: addLayerZoneMapping,
                     onLocate: onLocate,
+                    onSelectResult: onSearchResults,
                     setLocate: setLocate,
+                    setSearch: setSearch,
                 });
             })}
         </>
