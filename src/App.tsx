@@ -9,14 +9,22 @@ import TsunamiQueryHandler from "./components/TsunamiQueryHandler";
 import TsunamiFeatureLayer, {
     IFeatureLayerZoneMapping,
 } from "./components/TsunamiFeatureLayer";
+import { ReactComponent as InfoIcon } from "./icons/info.svg";
+
 import WarningModal from "./components/WarningModal";
+import WellingtonWarningTemplate from "./components/WarningTemplates/WellingtonWarningTemplate";
+import { NONAME } from "node:dns";
 
 const App: React.FC = () => {
-    const [zoneTitle, setZoneTitle] = useState<string>("Loading Zone...");
-    const [zoneMessage, setZoneMessage] = useState<string>(
-        "Loading Zone Info..."
-    );
+    const [zoneTitle, setZoneTitle] = useState<string>();
+    const [zoneMessage, setZoneMessage] = useState<string>();
+    const [
+        zoneMessageTemplate,
+        setZoneMessageTemplate,
+    ] = useState<React.ReactElement>();
     const [zoneColor, setZoneColor] = useState<string>("white");
+    const [inZone, setInZone] = useState<boolean>(false);
+    const [querying, setQuerying] = useState<boolean>(false);
     const [alertModalShowing, setAlertModalShowing] = useState<boolean>(false);
     const mapCenter = new Point({
         x: 1795999,
@@ -25,32 +33,12 @@ const App: React.FC = () => {
     });
     const mapZoom = 5;
 
-    const GWZoneMapping: IFeatureLayerZoneMapping = {
-        zoneField: "Col_Code",
-        zoneDetails: [
-            {
-                isRiskZone: true,
-                zoneFieldValue: "yellow",
-                messageTitle: "Yellow Zone",
-                messageBody: "flee if it's big",
-                zoneAlertColor: "rgb(254, 255, 166)",
-            },
-            {
-                isRiskZone: true,
-                zoneFieldValue: "orange",
-                messageTitle: "Orange Zone",
-                messageBody: "flee if it's biggish",
-                zoneAlertColor: "rgb(255, 212, 166)",
-            },
-            {
-                isRiskZone: true,
-                zoneFieldValue: "red",
-                messageTitle: "Red Zone",
-                messageBody: "flee if it's small",
-                zoneAlertColor: "rgb(255, 166, 166)",
-            },
-        ],
-    };
+    React.useEffect(() => {
+        // also check and track source of query trigger
+        if (inZone && !querying) {
+            setAlertModalShowing(true);
+        }
+    }, [inZone, querying]);
 
     return (
         <div
@@ -65,13 +53,45 @@ const App: React.FC = () => {
             <WarningModal
                 title={zoneTitle}
                 body={zoneMessage}
+                BodyTemplate={zoneMessageTemplate}
                 alertColor={zoneColor}
                 showing={alertModalShowing}
                 setShowing={setAlertModalShowing}
             />
-            <div>
-                <h1 style={{ backgroundColor: zoneColor }}>{zoneTitle}</h1>
-                <p>{zoneMessage}</p>
+            <div style={{ fontFamily: "sans-serif" }}>
+                <div
+                    style={{
+                        display: "flex",
+                        backgroundColor: zoneColor,
+                        padding: 10,
+                        margin: 0,
+                        color: "white",
+                    }}
+                >
+                    <div>
+                        <h1 style={{ padding: 0, margin: 0 }}>{zoneTitle}</h1>
+                    </div>
+                    <div style={{ marginLeft: "auto" }}>
+                        <button
+                            style={{
+                                backgroundColor: "transparent",
+                                border: "none",
+                                marginTop: "auto",
+                                marginBottom: "auto",
+                                height: "100%",
+                            }}
+                            onClick={() => setAlertModalShowing(true)}
+                        >
+                            <InfoIcon
+                                style={{
+                                    fill: "white",
+                                    width: "25px",
+                                    height: "100%",
+                                }}
+                            ></InfoIcon>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div style={{ flexGrow: 1 }}>
                 <MapView center={mapCenter} zoom={mapZoom}>
@@ -80,12 +100,15 @@ const App: React.FC = () => {
                         <TsunamiQueryHandler
                             setZoneTitle={setZoneTitle}
                             setZoneMessage={setZoneMessage}
+                            setZoneMessageTemplate={setZoneMessageTemplate}
                             setZoneColor={setZoneColor}
+                            setInZone={setInZone}
+                            setQuerying={setQuerying}
                         >
                             <Locate position={"top-left"} />
                             <TsunamiFeatureLayer
                                 url='https://mapping.gw.govt.nz/arcgis/rest/services/GW/Emergencies_P/MapServer/23'
-                                zoneMapping={GWZoneMapping}
+                                warningTemplate={WellingtonWarningTemplate}
                             />
                             <FeatureLayer url='https://services1.arcgis.com/n4yPwebTjJCmXB6W/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/0' />
                             <FeatureLayer url='https://topofthesouthmaps.co.nz/arcgis/rest/services/DataHazards/MapServer/0' />

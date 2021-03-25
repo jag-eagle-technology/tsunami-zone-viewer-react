@@ -5,15 +5,19 @@ import APIFeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import APIPoint from "@arcgis/core/geometry/Point";
 import { IFeatureLayerZoneMapping } from "./TsunamiFeatureLayer";
 import Locate from "@arcgis/core/widgets/Locate";
-import { whenTrueOnce } from "@arcgis/core/core/watchUtils";
 
 interface ITsunamiQueryHandler {
     map?: APIMap;
     mapView?: APIMapView;
     children?: React.ReactNode;
-    setZoneTitle: React.Dispatch<React.SetStateAction<string>>;
-    setZoneMessage: React.Dispatch<React.SetStateAction<string>>;
+    setZoneTitle: React.Dispatch<React.SetStateAction<string | undefined>>;
+    setZoneMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
+    setZoneMessageTemplate: React.Dispatch<
+        React.SetStateAction<React.ReactElement | undefined>
+    >;
     setZoneColor: React.Dispatch<React.SetStateAction<string>>;
+    setInZone: React.Dispatch<React.SetStateAction<boolean>>;
+    setQuerying: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
@@ -22,7 +26,10 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
     children,
     setZoneTitle,
     setZoneMessage,
+    setZoneMessageTemplate,
     setZoneColor,
+    setInZone,
+    setQuerying,
 }) => {
     const clickHandlerRef = React.useRef<IHandle>();
     const [layers, setLayers] = React.useState<APIFeatureLayer[]>([]);
@@ -71,7 +78,6 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
         }
     }, [mapView, locate]);
     const onLocate: __esri.LocateLocateEventHandler = (event) => {
-        console.log(event.position.coords);
         const locatePoint = new APIPoint({
             longitude: event.position.coords.longitude,
             latitude: event.position.coords.latitude,
@@ -82,15 +88,21 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
         point: __esri.Point,
         layers: APIFeatureLayer[]
     ) => {
+        setQuerying(true);
+        setZoneTitle("Getting info for this location...");
+        setZoneMessage(undefined);
+        setZoneMessageTemplate(undefined);
+        setZoneColor('rgb(71, 165, 237)');
+        setInZone(false);
         const query: __esri.QueryProperties = {
             spatialRelationship: "intersects",
             geometry: point,
             outFields: ["*"],
-            returnGeometry: true,
+            returnGeometry: false,
         };
-        var zoneFeature = undefined;
         const handleResult = (result: __esri.FeatureSet, index: number) => {
             if (result.features.length > 0) {
+                console.log(result.features[0].attributes);
                 const layerZoneMapping = layerZoneMappings.find(
                     (layerZoneMapping) =>
                         layerZoneMapping.url ==
@@ -105,8 +117,21 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
                             ]
                     );
                     if (alertLevelInfo) {
+                        setInZone(true);
+                        setQuerying(false);
                         setZoneTitle(alertLevelInfo.messageTitle);
-                        setZoneMessage(alertLevelInfo.messageBody);
+                        alertLevelInfo.messageBody &&
+                            setZoneMessage(alertLevelInfo.messageBody);
+                        alertLevelInfo.messageBodyTemplate &&
+                            setZoneMessageTemplate(
+                                React.createElement(
+                                    alertLevelInfo.messageBodyTemplate,
+                                    {
+                                        attributes:
+                                            result.features[0].attributes,
+                                    }
+                                )
+                            );
                         setZoneColor(alertLevelInfo.zoneAlertColor);
                         console.log(
                             `%c${alertLevelInfo.messageTitle} - ${alertLevelInfo.messageBody}`,
@@ -128,63 +153,9 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
             console.log("%coutside zone :)", "color: grey");
             setZoneTitle("Outside Tsunami Zone");
             setZoneMessage("Handy Message for if outside zone");
-            setZoneColor("rgb(242, 242, 242)");
+            setZoneColor("rgb(101, 240, 98)");
+            setQuerying(false);
         }
-        // const resultIndex = results.findIndex(
-        //     (result) => result.features.length > 0
-        // );
-        // if (resultIndex != -1) {
-        //     console.log(results[resultIndex]);
-        //     console.log("%cin Zone!!!", "color: red");
-        //     console.log(layers[resultIndex]);
-        // const layerZoneMapping = layerZoneMappings.find(
-        //     (layerZoneMapping) =>
-        //         layerZoneMapping.url ==
-        //         `${layers[resultIndex].url}/${layers[resultIndex].layerId}`
-        // );
-        // if (layerZoneMapping) {
-        //     const alertLevelInfo = layerZoneMapping.zoneDetails.find(
-        //         (zone) =>
-        //             zone.zoneFieldValue ==
-        //             results[resultIndex].features[0].attributes[
-        //                 layerZoneMapping.zoneField
-        //             ]
-        //     );
-        //     if (alertLevelInfo) {
-        //         setZoneTitle(alertLevelInfo.messageTitle);
-        //         setZoneMessage(alertLevelInfo.messageBody);
-        //         setZoneColor(alertLevelInfo.zoneAlertColor);
-        //         console.log(
-        //             `%c${alertLevelInfo.messageTitle} - ${alertLevelInfo.messageBody}`,
-        //             `background-color: ${alertLevelInfo.zoneAlertColor}; color: black`
-        //         );
-        //     }
-        // }
-        // messageTitle: string;
-        // messageBody: string;
-        // zoneAlertColor: string;
-        //   console.log(tsunamiZoneLayers[resultIndex]);
-        //   // console.log("%cin Zone!!!", 'color: red')
-        //   const zoneValue =
-        //     results[resultIndex].features[0].attributes[
-        //       tsunamiZoneLayers[resultIndex].zoneField
-        //     ];
-        //   const zoneDetails =
-        //     tsunamiZoneLayers[resultIndex].zoneDetails[zoneValue];
-        //   setZone(zoneDetails.title, zoneDetails.message, zoneDetails.color);
-        // } else {
-        //     console.log("%coutside zone :)", "color: grey");
-        //   setZone(
-        //     "Outside Tsunami Zone",
-        //     "Handy Message for if outside zone",
-        //     "rgb(242, 242, 242)"
-        //   );
-        // }
-    };
-    const triggerLocate = (locate: Locate) => {
-        whenTrueOnce(locate.viewModel, "goToLocationEnabled", () => {
-            locate.viewModel.locate();
-        });
     };
     React.useEffect(() => {
         if (mapView) {
@@ -201,7 +172,7 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
                     mapView,
                     map,
                     setLayer: addLayer,
-                    setZoneMapping: addLayerZoneMapping,
+                    setWarningTemplate: addLayerZoneMapping,
                     onLocate: onLocate,
                     setLocate: setLocate,
                 });

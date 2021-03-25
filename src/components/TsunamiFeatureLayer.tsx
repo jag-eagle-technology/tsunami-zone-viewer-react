@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import APIMap from "@arcgis/core/Map";
 import APIMapView from "@arcgis/core/views/MapView";
 import APIFeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import APIGraphic from "@arcgis/core/Graphic";
 import FeatureLayer from "./FeatureLayer";
 
 export interface IFeatureLayerZoneMapping {
@@ -12,7 +13,8 @@ export interface IFeatureLayerZoneMapping {
         zoneFieldValue: string;
         isRiskZone: boolean;
         messageTitle: string;
-        messageBody: string;
+        messageBody?: string;
+        messageBodyTemplate?: React.FC<{ attributes: any }>;
         zoneAlertColor: string;
     }[];
 }
@@ -22,8 +24,8 @@ interface ITsunamiFeatureLayer {
     mapView?: APIMapView;
     // children?: React.ReactNode;
     url: string;
-    zoneMapping: IFeatureLayerZoneMapping;
-    setZoneMapping?: (
+    warningTemplate: IFeatureLayerZoneMapping;
+    setWarningTemplate?: (
         zoneMapping: IFeatureLayerZoneMapping & { url: string }
     ) => void;
     setLayer?: (layer: APIFeatureLayer) => void;
@@ -33,12 +35,12 @@ const TsunamiFeatureLayer: React.FC<ITsunamiFeatureLayer> = ({
     map,
     mapView,
     url,
-    zoneMapping,
+    warningTemplate,
     setLayer,
-    setZoneMapping,
+    setWarningTemplate,
 }) => {
     useEffect(() => {
-        setZoneMapping && setZoneMapping({ ...zoneMapping, url });
+        setWarningTemplate && setWarningTemplate({ ...warningTemplate, url });
     }, []);
     return <FeatureLayer url={url} setLayer={setLayer} map={map} />;
 };
