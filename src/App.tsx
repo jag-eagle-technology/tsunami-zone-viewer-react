@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
+import PolygonSymbol3D from '@arcgis/core/symbols/PolygonSymbol3D'
 import MapView from "./components/MapView";
 import Map from "./components/Map";
 import LightGreyBasemap from "./components/BaseMap";
@@ -31,6 +33,23 @@ const App: React.FC = () => {
         spatialReference: { wkid: 2193 },
     });
     const mapZoom = 5;
+
+    const buildingsRenderer = new SimpleRenderer({
+        // type: "symbol", // autocasts as new UniqueValueRenderer()
+
+        // set properties from previous steps here
+
+        // define size visual variable based on height values in a field
+        symbol: new PolygonSymbol3D({
+            symbolLayers: [
+                {
+                    type: "extrude", // autocasts as new ExtrudeSymbol3DLayer()
+                    size: 10, // 100,000 meters in height
+                    material: { color: "red" },
+                },
+            ],
+        }),
+    });
 
     React.useEffect(() => {
         // also check and track source of query trigger
@@ -65,9 +84,9 @@ const App: React.FC = () => {
                     style={{
                         display: "flex",
                         // flex direction should be column for mobile
-                        flexDirection: 'column',
+                        flexDirection: "column",
                         backgroundColor: zoneColor,
-                        padding: '10px',
+                        padding: "10px",
                         margin: 0,
                         color: "white",
                     }}
@@ -77,7 +96,11 @@ const App: React.FC = () => {
                     </div>
                     <div style={{ /* marginLeft: "auto", */ display: "flex" }}>
                         <div
-                            style={{ marginLeft: "10px", marginRight: '10px', flexGrow: 1 }}
+                            style={{
+                                marginLeft: "10px",
+                                marginRight: "10px",
+                                flexGrow: 1,
+                            }}
                             ref={searchDivRef}
                         ></div>
                         <button
@@ -102,7 +125,7 @@ const App: React.FC = () => {
                 </div>
             </div>
             <div style={{ flexGrow: 1 }}>
-                <MapView center={mapCenter} zoom={mapZoom}>
+                <MapView center={mapCenter} zoom={mapZoom} type='2d'>
                     <Map>
                         <LightGreyBasemap />
                         <TsunamiQueryHandler
@@ -137,6 +160,7 @@ const App: React.FC = () => {
                             <FeatureLayer url='https://gis.ecan.govt.nz/arcgis/rest/services/Public/Geological_Hazards/MapServer/6' />
                             <FeatureLayer url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0' />
                         </TsunamiQueryHandler>
+                        <FeatureLayer url='https://services7.arcgis.com/jI87xPT7G1AGV8Uo/arcgis/rest/services/LINZ_NZ_Building_Outlines/FeatureServer' renderer={buildingsRenderer} />
                     </Map>
                 </MapView>
             </div>
