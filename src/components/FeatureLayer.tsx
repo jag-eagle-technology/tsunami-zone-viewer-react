@@ -21,7 +21,7 @@ const FeatureLayer: React.FC<IFeatureLayer> = ({
         }
         const featureLayer = new APIFeatureLayer({
             url,
-            renderer,
+            ...(renderer && {renderer: renderer}),
         });
         map.add(featureLayer);
         setLayer && setLayer(featureLayer);
