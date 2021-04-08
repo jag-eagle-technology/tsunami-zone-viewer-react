@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ReactComponent as WarningIcon } from "../icons/warning.svg";
 
 interface IWarningModal {
@@ -18,8 +18,18 @@ const WarningModal: React.FC<IWarningModal> = ({
     showing,
     setShowing,
     BodyTemplate,
-    address
+    address,
 }) => {
+    const [referer, setReferer] = useState<string | null>(null);
+    // let {''} useParams
+    const getLocation = () => {
+        const params = new URLSearchParams(window.location.search);
+        const referer = params.get("referer");
+        return referer;
+    };
+    React.useEffect(() => {
+        setReferer(getLocation());
+    });
     return showing ? (
         <div
             style={{
@@ -85,8 +95,8 @@ const WarningModal: React.FC<IWarningModal> = ({
                             style={{
                                 cursor: "pointer",
                                 color: "white",
-                                fontWeight: 'bold',
-                                fontSize: 'large',
+                                fontWeight: "bold",
+                                fontSize: "large",
                                 backgroundColor: alertColor,
                                 border: "none",
                                 padding: "10px",
@@ -98,8 +108,29 @@ const WarningModal: React.FC<IWarningModal> = ({
                             }}
                             onClick={() => setShowing(false)}
                         >
-                            Close
+                            View Map
                         </button>
+                        {referer && (
+                            <button
+                                style={{
+                                    cursor: "pointer",
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    fontSize: "large",
+                                    backgroundColor: alertColor,
+                                    border: "none",
+                                    padding: "10px",
+                                    paddingLeft: "30px",
+                                    paddingRight: "30px",
+                                    borderRadius: "5px",
+                                    boxShadow:
+                                        "0 1px 3px 0 rgba(0,0,0,0.1),0 1px 2px 0 rgba(0,0,0,0.06)",
+                                }}
+                                onClick={() => (window.location.href = referer)}
+                            >
+                                Return to Site
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
-import PolygonSymbol3D from '@arcgis/core/symbols/PolygonSymbol3D'
+// import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
+// import PolygonSymbol3D from '@arcgis/core/symbols/PolygonSymbol3D';
 import MapView from "./components/MapView";
 import Map from "./components/Map";
 import LightGreyBasemap from "./components/BaseMap";
@@ -13,6 +13,7 @@ import TsunamiFeatureLayer from "./components/TsunamiFeatureLayer";
 import { ReactComponent as InfoIcon } from "./icons/info.svg";
 import WarningModal from "./components/WarningModal";
 import WellingtonWarningTemplate from "./components/WarningTemplates/WellingtonWarningTemplate";
+import WestCoastWarningTemplate from "./components/WarningTemplates/WestCoastWarningTemplate";
 
 const App: React.FC = () => {
     const [zoneTitle, setZoneTitle] = useState<string>();
@@ -34,22 +35,22 @@ const App: React.FC = () => {
     });
     const mapZoom = 5;
 
-    const buildingsRenderer = new SimpleRenderer({
-        // type: "symbol", // autocasts as new UniqueValueRenderer()
+    // const buildingsRenderer = new SimpleRenderer({
+    //     // type: "symbol", // autocasts as new UniqueValueRenderer()
 
-        // set properties from previous steps here
+    //     // set properties from previous steps here
 
-        // define size visual variable based on height values in a field
-        symbol: new PolygonSymbol3D({
-            symbolLayers: [
-                {
-                    type: "extrude", // autocasts as new ExtrudeSymbol3DLayer()
-                    size: 10, // 100,000 meters in height
-                    material: { color: "red" },
-                },
-            ],
-        }),
-    });
+    //     // define size visual variable based on height values in a field
+    //     symbol: new PolygonSymbol3D({
+    //         symbolLayers: [
+    //             {
+    //                 type: "extrude", // autocasts as new ExtrudeSymbol3DLayer()
+    //                 size: 10, // 100,000 meters in height
+    //                 material: { color: "red" },
+    //             },
+    //         ],
+    //     }),
+    // });
 
     React.useEffect(() => {
         // also check and track source of query trigger
@@ -125,7 +126,8 @@ const App: React.FC = () => {
                 </div>
             </div>
             <div style={{ flexGrow: 1 }}>
-                <MapView center={mapCenter} zoom={mapZoom} type='2d'>
+                {/* <MapView center={mapCenter} zoom={mapZoom} type='2d'> */}
+                <MapView center={mapCenter} zoom={mapZoom}>
                     <Map>
                         <LightGreyBasemap />
                         <TsunamiQueryHandler
@@ -158,9 +160,13 @@ const App: React.FC = () => {
                             <FeatureLayer url='https://gis.boprc.govt.nz/server2/rest/services/BayOfPlentyMaps/CivilDefenceEmergencyManagement/MapServer/17' />
                             <FeatureLayer url='https://services1.arcgis.com/RNxkQaMWQcgbiF98/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/4' />
                             <FeatureLayer url='https://gis.ecan.govt.nz/arcgis/rest/services/Public/Geological_Hazards/MapServer/6' />
-                            <FeatureLayer url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0' />
+                            {/* <FeatureLayer url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0' /> */}
+                            <TsunamiFeatureLayer
+                                url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0'
+                                warningTemplate={WestCoastWarningTemplate}
+                            />
                         </TsunamiQueryHandler>
-                        <FeatureLayer url='https://services7.arcgis.com/jI87xPT7G1AGV8Uo/arcgis/rest/services/LINZ_NZ_Building_Outlines/FeatureServer' renderer={buildingsRenderer} />
+                        {/* <FeatureLayer url='https://services7.arcgis.com/jI87xPT7G1AGV8Uo/arcgis/rest/services/LINZ_NZ_Building_Outlines/FeatureServer' renderer={buildingsRenderer} /> */}
                     </Map>
                 </MapView>
             </div>
