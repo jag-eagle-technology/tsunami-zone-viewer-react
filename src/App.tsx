@@ -1,4 +1,5 @@
 import React, { useState, Suspense } from "react";
+import Header from "./components/Header";
 // import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
 // import PolygonSymbol3D from '@arcgis/core/symbols/PolygonSymbol3D';
 import Point from "@arcgis/core/geometry/Point";
@@ -10,8 +11,6 @@ import Point from "@arcgis/core/geometry/Point";
 // import Search from "./components/Search";
 // import TsunamiQueryHandler from "./components/TsunamiQueryHandler";
 // import TsunamiFeatureLayer from "./components/TsunamiFeatureLayer";
-import { ReactComponent as InfoIcon } from "./icons/info.svg";
-import headerStripImage from "./images/headerStripTitle.png";
 import WarningModal from "./components/WarningModal";
 import WellingtonWarningTemplate from "./components/WarningTemplates/WellingtonWarningTemplate";
 import WestCoastWarningTemplate from "./components/WarningTemplates/WestCoastWarningTemplate";
@@ -28,74 +27,15 @@ const TsunamiFeatureLayer = React.lazy(
     () => import("./components/TsunamiFeatureLayer")
 );
 
-
-interface IHeader {
-    zoneColor?: string;
-    zoneTitle?: string;
-    searchDivRef: React.RefObject<HTMLDivElement>;
-    setAlertModalShowing: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const Header: React.FC<IHeader> = ({
-    zoneColor = "#005a9c",
-    zoneTitle = "Select Zone or Search",
-    searchDivRef,
-    setAlertModalShowing,
-}) => {
+const Loader: React.FC = () => {
     return (
         <div
             style={{
-                fontFamily: "sans-serif",
-                backgroundImage: `url(${headerStripImage})`,
-                backgroundRepeat: "repeat-x",
-                backgroundPosition: "top",
-                paddingTop: "0.75rem",
+                width: "100%",
+                height: "100%",
+                backgroundColor: "antiquewhite",
             }}
-        >
-            <div
-                style={{
-                    display: "flex",
-                    // flex direction should be column for mobile
-                    flexDirection: "column",
-                    backgroundColor: zoneColor,
-                    padding: "10px",
-                    margin: 0,
-                    color: "white",
-                }}
-            >
-                <div>
-                    <h1 style={{ padding: 0, margin: 0 }}>{zoneTitle}</h1>
-                </div>
-                <div style={{ /* marginLeft: "auto", */ display: "flex" }}>
-                    <div
-                        style={{
-                            marginLeft: "10px",
-                            marginRight: "10px",
-                            flexGrow: 1,
-                        }}
-                        ref={searchDivRef}
-                    ></div>
-                    <button
-                        style={{
-                            backgroundColor: "transparent",
-                            border: "none",
-                            marginTop: "auto",
-                            marginBottom: "auto",
-                            height: "100%",
-                        }}
-                        onClick={() => setAlertModalShowing(true)}
-                    >
-                        <InfoIcon
-                            style={{
-                                fill: "white",
-                                width: "25px",
-                                height: "100%",
-                            }}
-                        />
-                    </button>
-                </div>
-            </div>
-        </div>
+        ></div>
     );
 };
 
@@ -172,9 +112,7 @@ const App: React.FC = () => {
             />
             <div style={{ flexGrow: 1 }}>
                 {/* <MapView center={mapCenter} zoom={mapZoom} type='2d'> */}
-                <Suspense
-                    fallback={<div style={{ backgroundColor: "red" }}>Loading...</div>}
-                >
+                <Suspense fallback={<Loader />}>
                     <MapView center={mapCenter} zoom={mapZoom}>
                         <Map>
                             <LightGreyBasemap />
@@ -187,16 +125,16 @@ const App: React.FC = () => {
                                 setQuerying={setQuerying}
                                 setAddress={setAddress}
                             >
-                                <Locate position={"top-left"} />
-                                <Search
+                                {/* <Locate position={"top-left"} /> */}
+                                {/* <Search
                                     searchDiv={searchDivRef}
                                     popupEnabled={false}
-                                />
+                                /> */}
                                 <TsunamiFeatureLayer
                                     url='https://mapping.gw.govt.nz/arcgis/rest/services/GW/Emergencies_P/MapServer/23'
                                     warningTemplate={WellingtonWarningTemplate}
                                 />
-                                <FeatureLayer url='https://services1.arcgis.com/n4yPwebTjJCmXB6W/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/0' />
+                                {/* <FeatureLayer url='https://services1.arcgis.com/n4yPwebTjJCmXB6W/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/0' />
                                 <FeatureLayer url='https://topofthesouthmaps.co.nz/arcgis/rest/services/DataHazards/MapServer/0' />
                                 <FeatureLayer url='https://services7.arcgis.com/8G10QCd84QpdcTJ9/arcgis/rest/services/evacuation_areas/FeatureServer/1' />
                                 <FeatureLayer url='https://gis.marlborough.govt.nz/server/rest/services/OpenData/OpenData1/MapServer/16' />
@@ -207,7 +145,7 @@ const App: React.FC = () => {
                                 <FeatureLayer url='https://maps.es.govt.nz/server/rest/services/Public/NaturalHazards/MapServer/8' />
                                 <FeatureLayer url='https://gis.boprc.govt.nz/server2/rest/services/BayOfPlentyMaps/CivilDefenceEmergencyManagement/MapServer/17' />
                                 <FeatureLayer url='https://services1.arcgis.com/RNxkQaMWQcgbiF98/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/4' />
-                                <FeatureLayer url='https://gis.ecan.govt.nz/arcgis/rest/services/Public/Geological_Hazards/MapServer/6' />
+                                <FeatureLayer url='https://gis.ecan.govt.nz/arcgis/rest/services/Public/Geological_Hazards/MapServer/6' /> */}
                                 {/* <FeatureLayer url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0' /> */}
                                 <TsunamiFeatureLayer
                                     url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0'
