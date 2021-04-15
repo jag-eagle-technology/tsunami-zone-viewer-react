@@ -1,20 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 // import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
 // import PolygonSymbol3D from '@arcgis/core/symbols/PolygonSymbol3D';
-import MapView from "./components/MapView";
-import Map from "./components/Map";
-import LightGreyBasemap from "./components/BaseMap";
 import Point from "@arcgis/core/geometry/Point";
-import FeatureLayer from "./components/FeatureLayer";
-import Locate from "./components/Locate";
-import Search from "./components/Search";
-import TsunamiQueryHandler from "./components/TsunamiQueryHandler";
-import TsunamiFeatureLayer from "./components/TsunamiFeatureLayer";
+// import MapView from "./components/MapView";
+// import Map from "./components/Map";
+// import LightGreyBasemap from "./components/BaseMap";
+// import FeatureLayer from "./components/FeatureLayer";
+// import Locate from "./components/Locate";
+// import Search from "./components/Search";
+// import TsunamiQueryHandler from "./components/TsunamiQueryHandler";
+// import TsunamiFeatureLayer from "./components/TsunamiFeatureLayer";
 import { ReactComponent as InfoIcon } from "./icons/info.svg";
 import headerStripImage from "./images/headerStripTitle.png";
 import WarningModal from "./components/WarningModal";
 import WellingtonWarningTemplate from "./components/WarningTemplates/WellingtonWarningTemplate";
 import WestCoastWarningTemplate from "./components/WarningTemplates/WestCoastWarningTemplate";
+const MapView = React.lazy(() => import("./components/MapView"));
+const Map = React.lazy(() => import("./components/Map"));
+const LightGreyBasemap = React.lazy(() => import("./components/BaseMap"));
+const FeatureLayer = React.lazy(() => import("./components/FeatureLayer"));
+const Locate = React.lazy(() => import("./components/Locate"));
+const Search = React.lazy(() => import("./components/Search"));
+const TsunamiQueryHandler = React.lazy(
+    () => import("./components/TsunamiQueryHandler")
+);
+const TsunamiFeatureLayer = React.lazy(
+    () => import("./components/TsunamiFeatureLayer")
+);
+
 
 interface IHeader {
     zoneColor?: string;
@@ -36,7 +49,7 @@ const Header: React.FC<IHeader> = ({
                 backgroundImage: `url(${headerStripImage})`,
                 backgroundRepeat: "repeat-x",
                 backgroundPosition: "top",
-                paddingTop: '0.75rem'
+                paddingTop: "0.75rem",
             }}
         >
             <div
@@ -51,9 +64,7 @@ const Header: React.FC<IHeader> = ({
                 }}
             >
                 <div>
-                    <h1 style={{ padding: 0, margin: 0 }}>
-                        {zoneTitle}
-                    </h1>
+                    <h1 style={{ padding: 0, margin: 0 }}>{zoneTitle}</h1>
                 </div>
                 <div style={{ /* marginLeft: "auto", */ display: "flex" }}>
                     <div
@@ -161,48 +172,52 @@ const App: React.FC = () => {
             />
             <div style={{ flexGrow: 1 }}>
                 {/* <MapView center={mapCenter} zoom={mapZoom} type='2d'> */}
-                <MapView center={mapCenter} zoom={mapZoom}>
-                    <Map>
-                        <LightGreyBasemap />
-                        <TsunamiQueryHandler
-                            setZoneTitle={setZoneTitle}
-                            setZoneMessage={setZoneMessage}
-                            setZoneMessageTemplate={setZoneMessageTemplate}
-                            setZoneColor={setZoneColor}
-                            setInZone={setInZone}
-                            setQuerying={setQuerying}
-                            setAddress={setAddress}
-                        >
-                            <Locate position={"top-left"} />
-                            <Search
-                                searchDiv={searchDivRef}
-                                popupEnabled={false}
-                            />
-                            <TsunamiFeatureLayer
-                                url='https://mapping.gw.govt.nz/arcgis/rest/services/GW/Emergencies_P/MapServer/23'
-                                warningTemplate={WellingtonWarningTemplate}
-                            />
-                            <FeatureLayer url='https://services1.arcgis.com/n4yPwebTjJCmXB6W/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/0' />
-                            <FeatureLayer url='https://topofthesouthmaps.co.nz/arcgis/rest/services/DataHazards/MapServer/0' />
-                            <FeatureLayer url='https://services7.arcgis.com/8G10QCd84QpdcTJ9/arcgis/rest/services/evacuation_areas/FeatureServer/1' />
-                            <FeatureLayer url='https://gis.marlborough.govt.nz/server/rest/services/OpenData/OpenData1/MapServer/16' />
-                            <FeatureLayer url='https://services9.arcgis.com/QOkIjdWspeCZ4dcg/arcgis/rest/services/TRC%20Tsunami%20Inundation/FeatureServer/0' />
-                            <FeatureLayer url='https://services7.arcgis.com/cJyn351KIix0PiKq/arcgis/rest/services/Hawkes_Bay_Tsunami_Evacuation_Zones/FeatureServer/0' />
-                            <FeatureLayer url='https://services1.arcgis.com/VuN78wcRdq1Oj69W/arcgis/rest/services/TsunamiEvacuationZones2016/FeatureServer/0' />
-                            <FeatureLayer url='https://services1.arcgis.com/n4yPwebTjJCmXB6W/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/0' />
-                            <FeatureLayer url='https://maps.es.govt.nz/server/rest/services/Public/NaturalHazards/MapServer/8' />
-                            <FeatureLayer url='https://gis.boprc.govt.nz/server2/rest/services/BayOfPlentyMaps/CivilDefenceEmergencyManagement/MapServer/17' />
-                            <FeatureLayer url='https://services1.arcgis.com/RNxkQaMWQcgbiF98/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/4' />
-                            <FeatureLayer url='https://gis.ecan.govt.nz/arcgis/rest/services/Public/Geological_Hazards/MapServer/6' />
-                            {/* <FeatureLayer url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0' /> */}
-                            <TsunamiFeatureLayer
-                                url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0'
-                                warningTemplate={WestCoastWarningTemplate}
-                            />
-                        </TsunamiQueryHandler>
-                        {/* <FeatureLayer url='https://services7.arcgis.com/jI87xPT7G1AGV8Uo/arcgis/rest/services/LINZ_NZ_Building_Outlines/FeatureServer' renderer={buildingsRenderer} /> */}
-                    </Map>
-                </MapView>
+                <Suspense
+                    fallback={<div style={{ backgroundColor: "red" }}>Loading...</div>}
+                >
+                    <MapView center={mapCenter} zoom={mapZoom}>
+                        <Map>
+                            <LightGreyBasemap />
+                            <TsunamiQueryHandler
+                                setZoneTitle={setZoneTitle}
+                                setZoneMessage={setZoneMessage}
+                                setZoneMessageTemplate={setZoneMessageTemplate}
+                                setZoneColor={setZoneColor}
+                                setInZone={setInZone}
+                                setQuerying={setQuerying}
+                                setAddress={setAddress}
+                            >
+                                <Locate position={"top-left"} />
+                                <Search
+                                    searchDiv={searchDivRef}
+                                    popupEnabled={false}
+                                />
+                                <TsunamiFeatureLayer
+                                    url='https://mapping.gw.govt.nz/arcgis/rest/services/GW/Emergencies_P/MapServer/23'
+                                    warningTemplate={WellingtonWarningTemplate}
+                                />
+                                <FeatureLayer url='https://services1.arcgis.com/n4yPwebTjJCmXB6W/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/0' />
+                                <FeatureLayer url='https://topofthesouthmaps.co.nz/arcgis/rest/services/DataHazards/MapServer/0' />
+                                <FeatureLayer url='https://services7.arcgis.com/8G10QCd84QpdcTJ9/arcgis/rest/services/evacuation_areas/FeatureServer/1' />
+                                <FeatureLayer url='https://gis.marlborough.govt.nz/server/rest/services/OpenData/OpenData1/MapServer/16' />
+                                <FeatureLayer url='https://services9.arcgis.com/QOkIjdWspeCZ4dcg/arcgis/rest/services/TRC%20Tsunami%20Inundation/FeatureServer/0' />
+                                <FeatureLayer url='https://services7.arcgis.com/cJyn351KIix0PiKq/arcgis/rest/services/Hawkes_Bay_Tsunami_Evacuation_Zones/FeatureServer/0' />
+                                <FeatureLayer url='https://services1.arcgis.com/VuN78wcRdq1Oj69W/arcgis/rest/services/TsunamiEvacuationZones2016/FeatureServer/0' />
+                                <FeatureLayer url='https://services1.arcgis.com/n4yPwebTjJCmXB6W/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/0' />
+                                <FeatureLayer url='https://maps.es.govt.nz/server/rest/services/Public/NaturalHazards/MapServer/8' />
+                                <FeatureLayer url='https://gis.boprc.govt.nz/server2/rest/services/BayOfPlentyMaps/CivilDefenceEmergencyManagement/MapServer/17' />
+                                <FeatureLayer url='https://services1.arcgis.com/RNxkQaMWQcgbiF98/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/4' />
+                                <FeatureLayer url='https://gis.ecan.govt.nz/arcgis/rest/services/Public/Geological_Hazards/MapServer/6' />
+                                {/* <FeatureLayer url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0' /> */}
+                                <TsunamiFeatureLayer
+                                    url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0'
+                                    warningTemplate={WestCoastWarningTemplate}
+                                />
+                            </TsunamiQueryHandler>
+                            {/* <FeatureLayer url='https://services7.arcgis.com/jI87xPT7G1AGV8Uo/arcgis/rest/services/LINZ_NZ_Building_Outlines/FeatureServer' renderer={buildingsRenderer} /> */}
+                        </Map>
+                    </MapView>
+                </Suspense>
             </div>
         </div>
     );
