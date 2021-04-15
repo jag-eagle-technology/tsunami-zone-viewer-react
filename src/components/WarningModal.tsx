@@ -40,8 +40,7 @@ const WarningModal: React.FC<IWarningModal> = ({
                 bottom: 0,
                 backgroundColor: "rgba(0,0,0,0.75)",
                 zIndex: 9999,
-                padding: 10,
-                fontFamily: "sans-serif",
+                padding: 10
             }}
         >
             <div

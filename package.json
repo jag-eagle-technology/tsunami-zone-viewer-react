@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@arcgis/core": "4.19.0-next.20210407",
+    "@arcgis/core": "4.18.1",
     "@tailwindcss/postcss7-compat": "^2.0.4",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
