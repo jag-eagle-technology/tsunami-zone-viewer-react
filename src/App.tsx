@@ -14,6 +14,7 @@ import Point from "@arcgis/core/geometry/Point";
 import WarningModal from "./components/WarningModal";
 import WellingtonWarningTemplate from "./components/WarningTemplates/WellingtonWarningTemplate";
 import WestCoastWarningTemplate from "./components/WarningTemplates/WestCoastWarningTemplate";
+import { MapCenterLocation } from "./components/MapView";
 const MapView = React.lazy(() => import("./components/MapView"));
 const Map = React.lazy(() => import("./components/Map"));
 const LightGreyBasemap = React.lazy(() => import("./components/BaseMap"));
@@ -52,12 +53,23 @@ const App: React.FC = () => {
     const [alertModalShowing, setAlertModalShowing] = useState<boolean>(false);
     const [address, setAddress] = useState<string>();
     const searchDivRef = React.useRef<HTMLDivElement>(null);
-    const mapCenter = new Point({
-        x: 1795999,
-        y: 5457405,
-        spatialReference: { wkid: 2193 },
+    // const mapCenter = {
+    //     center: new Point({
+    //         x: 1795999,
+    //         y: 5457405,
+    //         spatialReference: { wkid: 2193 },
+    //     }),
+    //     zoom: 5,
+    // };
+    const [mapCenter, setMapCenter] = useState({
+        center: new Point({
+            x: 1795999,
+            y: 5457405,
+            spatialReference: { wkid: 2193 },
+        }),
+        zoom: 5,
     });
-    const mapZoom = 5;
+    // const mapZoom = 5;
 
     // const buildingsRenderer = new SimpleRenderer({
     //     // type: "symbol", // autocasts as new UniqueValueRenderer()
@@ -110,10 +122,10 @@ const App: React.FC = () => {
                 searchDivRef={searchDivRef}
                 setAlertModalShowing={setAlertModalShowing}
             />
-            <div style={{ flexGrow: 1 }}>
+            <div style={{ flexGrow: 1, position: "relative" }}>
                 {/* <MapView center={mapCenter} zoom={mapZoom} type='2d'> */}
                 <Suspense fallback={<Loader />}>
-                    <MapView center={mapCenter} zoom={mapZoom}>
+                    <MapView center={mapCenter} setCenter={setMapCenter}>
                         <Map>
                             <LightGreyBasemap />
                             <TsunamiQueryHandler
@@ -160,6 +172,33 @@ const App: React.FC = () => {
                         </Map>
                     </MapView>
                 </Suspense>
+                <div
+                    style={{
+                        position: "absolute",
+                        height: "150px",
+                        width: "150px",
+                        backgroundColor: "antiquewhite",
+                        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.3)",
+                        right: 0,
+                        bottom: 0,
+                        marginBottom: "20px",
+                        marginRight: "20px",
+                    }}
+                >
+                    <Suspense fallback={<Loader />}>
+                        <MapView
+                            center={{
+                                center: mapCenter.center,
+                                zoom: mapCenter.zoom - 4,
+                            }}
+                            components={[]}
+                        >
+                            <Map>
+                                <LightGreyBasemap />
+                            </Map>
+                        </MapView>
+                    </Suspense>
+                </div>
             </div>
         </div>
     );

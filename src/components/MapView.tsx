@@ -3,27 +3,31 @@ import Map from "@arcgis/core/Map";
 import Point from "@arcgis/core/geometry/Point";
 import APIMapView from "@arcgis/core/views/MapView";
 import { whenTrue } from "@arcgis/core/core/watchUtils";
+import { couldStartTrivia } from "typescript";
 export type MapCenterLocation = {
-    lat: number;
-    lon: number;
+    center: Point;
     zoom: number;
 };
 
 interface IMapView {
-    center?: Point;
-    zoom?: number;
+    center?: MapCenterLocation;
+    setCenter?: React.Dispatch<React.SetStateAction<MapCenterLocation>>;
+    components?: string[];
     children?: React.ReactNode;
     onMapClick?: __esri.MapViewClickEventHandler;
 }
 
 const MapView: React.FC<IMapView> = ({
     center,
-    zoom,
+    setCenter,
     children,
     onMapClick,
+    components,
 }) => {
     const mapDivRef = React.useRef<HTMLDivElement>(null);
     const mapViewRef = React.useRef<APIMapView>();
+    const shouldUpdateCenterRef = React.useRef<boolean>(true);
+    const timeoutUpdateCenterRef = React.useRef<NodeJS.Timeout>();
     const [mapView, setMapView] = React.useState<APIMapView>();
     const initMapView = () => {
         if (!mapDivRef.current) {
@@ -36,53 +40,54 @@ const MapView: React.FC<IMapView> = ({
         const view = new APIMapView({
             // map: new Map(),
             container: mapDivRef.current,
-            center: center || undefined,
-            zoom: zoom || undefined,
+            center: center?.center || undefined,
+            zoom: center?.zoom || undefined,
             spatialReference: {
                 wkid: 2193,
             },
         });
+        if (components) {
+            view.ui.components = components;
+        }
         mapViewRef.current = view;
         setMapView(view);
         view.when(() => {
-            center && (view.center = center);
-            zoom && (view.zoom = zoom);
+            center && (view.center = center.center);
+            center && (view.zoom = center.zoom);
         });
         onMapClick && view.on("click", onMapClick);
-        // add listener to update mapview center
-        // view.watch('stationary')
-        whenTrue(view, "stationary", () => {
-            // console.log('mapview is stationary', mapView.center, mapView.zoom);
-
-            if (view.zoom === -1) {
+        whenTrue(mapViewRef.current, "stationary", () => {
+            if (!mapViewRef.current) {
                 return;
             }
-
+            if (mapViewRef.current.zoom === -1) {
+                return;
+            }
             const centerLocation: MapCenterLocation = {
-                lat:
-                    view.center && view.center.latitude
-                        ? +view.center.latitude.toFixed(3)
-                        : 0,
-                lon:
-                    view.center && view.center.longitude
-                        ? +view.center.longitude.toFixed(3)
-                        : 0,
-                zoom: view.zoom,
+                center: mapViewRef.current.center,
+                zoom: mapViewRef.current.zoom,
             };
-
-            // updateMapLocation(centerLocation);
+            timeoutUpdateCenterRef.current &&
+                clearTimeout(timeoutUpdateCenterRef.current);
+            shouldUpdateCenterRef.current = false;
+            setCenter && setCenter(centerLocation);
+            timeoutUpdateCenterRef.current = setTimeout(
+                () => (shouldUpdateCenterRef.current = true),
+                250
+            );
         });
     };
     React.useEffect(() => {
         initMapView();
     }, []);
-    /*
+
     React.useEffect(() => {
-        if (mapView && center) {
-            mapView.center = center;
+        if (mapViewRef.current && shouldUpdateCenterRef.current && center) {
+            mapViewRef.current.center = center.center;
+            mapViewRef.current.zoom = center.zoom;
         }
-    }, [mapView, center]);
-    */
+    }, [center]);
+
     return (
         <div style={{ height: "100%", width: "100%" }}>
             <div

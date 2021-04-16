@@ -50,21 +50,21 @@ const WellingtonWarningTemplate: IFeatureLayerZoneMapping = {
     zoneDetails: [
         {
             isRiskZone: true,
-            zoneFieldValue: "yellow",
+            zoneFieldValue: "Yellow",
             messageTitle: "Yellow Zone",
             messageBodyTemplate: Template,
             zoneAlertColor: "rgb(241, 245, 0)",
         },
         {
             isRiskZone: true,
-            zoneFieldValue: "orange",
+            zoneFieldValue: "Orange",
             messageTitle: "Orange Zone",
             messageBodyTemplate: Template,
             zoneAlertColor: "rgb(245, 131, 0)",
         },
         {
             isRiskZone: true,
-            zoneFieldValue: "red",
+            zoneFieldValue: "Red",
             messageTitle: "Red Zone",
             messageBodyTemplate: Template,
             zoneAlertColor: "rgb(245, 0, 0)",
