@@ -125,13 +125,13 @@ const App: React.FC = () => {
                                 setQuerying={setQuerying}
                                 setAddress={setAddress}
                             >
-                                {/* <Locate position={"top-left"} /> */}
-                                {/* <Search
+                                <Locate position={"top-left"} />
+                                <Search
                                     searchDiv={searchDivRef}
                                     popupEnabled={false}
-                                /> */}
+                                />
                                 <TsunamiFeatureLayer
-                                    url='https://mapping.gw.govt.nz/arcgis/rest/services/GW/Emergencies_P/MapServer/23'
+                                    url='https://services2.arcgis.com/RS7BXJAO6ksvblJm/arcgis/rest/services/Tsunami_Zones_Wellington_Region/FeatureServer/0'
                                     warningTemplate={WellingtonWarningTemplate}
                                 />
                                 {/* <FeatureLayer url='https://services1.arcgis.com/n4yPwebTjJCmXB6W/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/0' />
@@ -147,8 +147,12 @@ const App: React.FC = () => {
                                 <FeatureLayer url='https://services1.arcgis.com/RNxkQaMWQcgbiF98/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/4' />
                                 <FeatureLayer url='https://gis.ecan.govt.nz/arcgis/rest/services/Public/Geological_Hazards/MapServer/6' /> */}
                                 {/* <FeatureLayer url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0' /> */}
-                                <TsunamiFeatureLayer
+                                {/* <TsunamiFeatureLayer
                                     url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0'
+                                    warningTemplate={WestCoastWarningTemplate}
+                                /> */}
+                                <TsunamiFeatureLayer
+                                    url='https://services.arcgis.com/hLRlshaEMEYQG5A8/arcgis/rest/services/West_Coast_Tsunami_Zone_Unauthoritative/FeatureServer/0'
                                     warningTemplate={WestCoastWarningTemplate}
                                 />
                             </TsunamiQueryHandler>

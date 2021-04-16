@@ -2,15 +2,17 @@ import React from "react";
 import { IFeatureLayerZoneMapping } from "../TsunamiFeatureLayer";
 
 interface WellingtonAttributes {
+    OBJECTID: number;
+    FID_Wellington_Region_Tsunami_E: number;
+    Zone_Class: number;
     Col_Code: string;
     Evac_Zone: string;
-    Heights: string;
-    Info: string;
     Location: string;
-    OBJECTID: number;
-    "Shape.area": number;
-    "Shape.len": number;
-    Zone_Class: number;
+    Info: string;
+    Heights: string;
+    Instruction: string;
+    "Shape__Area": number;
+    "Shape__Length": number;
 }
 
 const Template: React.FC<{ attributes: any }> = ({ attributes }) => {

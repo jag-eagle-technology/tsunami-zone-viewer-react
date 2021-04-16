@@ -12,10 +12,14 @@ const Basemap: React.FC<IBasemap> = ({ map }) => {
         if (!map) {
             throw new Error("no map set on basemap component");
         }
+        // const nzLightGreyVector = new VectorTileLayer({
+        //     portalItem: {
+        //         id: "fed71141e42a45c49dabb30a4c2903e1",
+        //     },
+        // });
         const nzLightGreyVector = new VectorTileLayer({
-            portalItem: {
-                id: "fed71141e42a45c49dabb30a4c2903e1",
-            },
+            url:
+                "https://www.arcgis.com/sharing/rest/content/items/fed71141e42a45c49dabb30a4c2903e1/resources/styles/root.json",
         });
         const basemap = new APIBasemap({
             baseLayers: [nzLightGreyVector],

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import APIMap from "@arcgis/core/Map";
 import APISearch from "@arcgis/core/widgets/Search";
 import APIMapView from "@arcgis/core/views/MapView";
@@ -22,6 +22,7 @@ const Search: React.FC<ISearch> = ({
     popupEnabled = true
 }) => {
     // stick in a couple of refs to track locate and locate event handler
+    const searchRef = useRef<APISearch>();
     const initSearch = () => {
         if (!mapView) {
             throw new Error("no mapView set for locate component");
@@ -36,11 +37,13 @@ const Search: React.FC<ISearch> = ({
         }
         onSelectResult && search.on("select-result", onSelectResult);
         setSearch && setSearch(search);
+        searchRef.current = search;
     };
     useEffect(() => {
         if (mapView) {
             initSearch();
         }
+        return () => searchRef.current?.destroy();
     }, [mapView]);
     return <></>;
 };

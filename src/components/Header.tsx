@@ -1,5 +1,5 @@
 import React from 'react';
-import headerStripImage from "./images/headerStripTitle.png";
+import headerStripImage from "../images/headerStripTitle.png";
 import { ReactComponent as InfoIcon } from "../icons/info.svg";
 
 interface IHeader {
