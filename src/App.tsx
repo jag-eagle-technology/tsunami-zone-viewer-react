@@ -17,7 +17,8 @@ import WestCoastWarningTemplate from "./components/WarningTemplates/WestCoastWar
 import { MapCenterLocation } from "./components/MapView";
 const MapView = React.lazy(() => import("./components/MapView"));
 const Map = React.lazy(() => import("./components/Map"));
-const LightGreyBasemap = React.lazy(() => import("./components/BaseMap"));
+const ImageryBasemap = React.lazy(() => import("./components/BaseMap").then(module => ({default: module.ImageryBasemap})));
+const LightGreyBasemap = React.lazy(() => import("./components/BaseMap").then(module => ({default: module.LightGreyBasemap})));
 const FeatureLayer = React.lazy(() => import("./components/FeatureLayer"));
 const Locate = React.lazy(() => import("./components/Locate"));
 const Search = React.lazy(() => import("./components/Search"));
@@ -127,7 +128,7 @@ const App: React.FC = () => {
                 <Suspense fallback={<Loader />}>
                     <MapView center={mapCenter} setCenter={setMapCenter}>
                         <Map>
-                            <LightGreyBasemap />
+                            <ImageryBasemap />
                             <TsunamiQueryHandler
                                 setZoneTitle={setZoneTitle}
                                 setZoneMessage={setZoneMessage}

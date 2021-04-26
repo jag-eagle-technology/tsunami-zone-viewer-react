@@ -3,11 +3,12 @@ import APIMapView from "@arcgis/core/views/MapView";
 import APIMap from "@arcgis/core/Map";
 import APIBasemap from "@arcgis/core/Basemap";
 import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer";
+import TileLayer from "@arcgis/core/layers/TileLayer";
 
 interface IBasemap {
     map?: APIMap;
 }
-const Basemap: React.FC<IBasemap> = ({ map }) => {
+export const LightGreyBasemap: React.FC<IBasemap> = ({ map }) => {
     const initBasemap = () => {
         if (!map) {
             throw new Error("no map set on basemap component");
@@ -33,5 +34,31 @@ const Basemap: React.FC<IBasemap> = ({ map }) => {
     }, [map]);
     return <></>;
 };
+export const ImageryBasemap: React.FC<IBasemap> = ({ map }) => {
+    const initBasemap = () => {
+        if (!map) {
+            throw new Error("no map set on basemap component");
+        }
+        // const nzLightGreyVector = new VectorTileLayer({
+        //     portalItem: {
+        //         id: "fed71141e42a45c49dabb30a4c2903e1",
+        //     },
+        // });
+        const nzImageryLayer = new TileLayer({
+            url:
+                "https://services.arcgisonline.co.nz/arcgis/rest/services/Imagery/newzealand/MapServer",
+        });
+        const basemap = new APIBasemap({
+            baseLayers: [nzImageryLayer],
+        });
+        map.basemap = basemap;
+    };
+    useEffect(() => {
+        if (map) {
+            initBasemap();
+        }
+    }, [map]);
+    return <></>;
+};
 
-export default Basemap;
+export default LightGreyBasemap;
