@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import esriConfig from "@arcgis/core/config.js";
+// import esriConfig from "@arcgis/core/config.js";
 import "@arcgis/core/assets/esri/themes/light/main.css";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-esriConfig.assetsPath = "https://cdn.jsdelivr.net/npm/arcgis-js-api@4.18.1/assets";
+// esriConfig.assetsPath = "https://cdn.jsdelivr.net/npm/arcgis-js-api@4.18.1/assets";
 
 ReactDOM.render(
     <React.StrictMode>

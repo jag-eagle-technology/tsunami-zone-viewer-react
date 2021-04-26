@@ -43,6 +43,12 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
     const [layerZoneMappings, setLayerZoneMappings] = React.useState<
         (IFeatureLayerZoneMapping & { url: string })[]
     >([]);
+    const layerZoneMappingsRef = React.useRef<
+        (IFeatureLayerZoneMapping & { url: string })[]
+    >([]);
+    React.useEffect(() => {
+        layerZoneMappingsRef.current = layerZoneMappings;
+    }, [layerZoneMappings]);
     const [locate, setLocate] = React.useState<Locate>();
     const [search, setSearch] = React.useState<Search>();
     const searchRef = React.useRef<Search>();
@@ -150,10 +156,13 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
             outFields: ["*"],
             returnGeometry: false,
         };
-        const handleResult = (result: __esri.FeatureSet, index: number) => {
+        const handleResult = (
+            result: __esri.FeatureSet,
+            index: number
+        ) => {
             if (result.features.length > 0) {
                 console.log(result.features[0].attributes);
-                const layerZoneMapping = layerZoneMappings.find(
+                const layerZoneMapping = layerZoneMappingsRef.current.find(
                     (layerZoneMapping) =>
                         layerZoneMapping.url ==
                         `${layers[index].url}/${layers[index].layerId}`
@@ -223,8 +232,11 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
                     map,
                     setLayer: addLayer,
                     setWarningTemplate: addLayerZoneMapping,
-                    onLocate: onLocate,
-                    onSelectResult: onSearchResults,
+                    // onLocate: onLocate,
+                    onLocate: (event: __esri.LocateLocateEvent) =>
+                        onLocate(event),
+                    onSelectResult: (event: __esri.SearchSelectResultEvent) =>
+                        onSearchResults(event),
                     setLocate: setLocate,
                     setSearch: setSearch,
                 });
