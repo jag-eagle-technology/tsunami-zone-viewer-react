@@ -30,6 +30,8 @@ const MapView: React.FC<IMapView> = ({
     const timeoutUpdateCenterRef = React.useRef<NodeJS.Timeout>();
     const [mapView, setMapView] = React.useState<APIMapView>();
     const initMapView = () => {
+        console.log('initiating map view');
+        console.log(mapDivRef);
         if (!mapDivRef.current) {
             throw new Error("Map div is not defined");
         }

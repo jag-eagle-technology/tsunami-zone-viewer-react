@@ -139,10 +139,10 @@ const App: React.FC = () => {
                                 setAddress={setAddress}
                             >
                                 <Locate position={"top-left"} />
-                                <Search
+                                {/* <Search
                                     searchDiv={searchDivRef}
                                     popupEnabled={false}
-                                />
+                                /> */}
                                 <TsunamiFeatureLayer
                                     url='https://services2.arcgis.com/RS7BXJAO6ksvblJm/arcgis/rest/services/Tsunami_Zones_Wellington_Region/FeatureServer/0'
                                     warningTemplate={WellingtonWarningTemplate}
