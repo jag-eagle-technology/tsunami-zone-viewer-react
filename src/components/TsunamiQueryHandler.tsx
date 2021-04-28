@@ -75,15 +75,17 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
         if (!mapView) {
             throw new Error("no mapView set for tsunamiQueryHandler");
         }
-        clickHandlerRef.current = mapView.on("click", (event) => {
-            var point = mapView.toMap({
-                x: event.x,
-                y: event.y,
+        mapView.when(() => {
+            clickHandlerRef.current = mapView.on("click", (event) => {
+                var point = mapView.toMap({
+                    x: event.x,
+                    y: event.y,
+                });
+                queryLayers(point, layers, "click");
             });
-            queryLayers(point, layers, "click");
+            queryPointGraphicLayerRef.current = new GraphicsLayer();
+            map?.add(queryPointGraphicLayerRef.current);
         });
-        queryPointGraphicLayerRef.current = new GraphicsLayer();
-        map?.add(queryPointGraphicLayerRef.current);
     };
     const initTsunamiLocateHandler = () => {
         if (!mapView || !locate) {
@@ -93,11 +95,6 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
             locate.viewModel.locate();
         });
     };
-    React.useEffect(() => {
-        if (mapView && locate) {
-            initTsunamiLocateHandler();
-        }
-    }, [mapView, locate]);
     const onLocate: __esri.LocateLocateEventHandler = (event) => {
         const locatePoint = new APIPoint({
             longitude: event.position.coords.longitude,
@@ -156,10 +153,7 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
             outFields: ["*"],
             returnGeometry: false,
         };
-        const handleResult = (
-            result: __esri.FeatureSet,
-            index: number
-        ) => {
+        const handleResult = (result: __esri.FeatureSet, index: number) => {
             if (result.features.length > 0) {
                 console.log(result.features[0].attributes);
                 const layerZoneMapping = layerZoneMappingsRef.current.find(
@@ -216,6 +210,11 @@ const TsunamiQueryHandler: React.FC<ITsunamiQueryHandler> = ({
             setQuerying(false);
         }
     };
+    React.useEffect(() => {
+        if (mapView && locate) {
+            initTsunamiLocateHandler();
+        }
+    }, [mapView, locate]);
     React.useEffect(() => {
         if (mapView) {
             initTsunamiQueryHandler();
