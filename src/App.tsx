@@ -17,8 +17,16 @@ import WestCoastWarningTemplate from "./components/WarningTemplates/WestCoastWar
 import { MapCenterLocation } from "./components/MapView";
 const MapView = React.lazy(() => import("./components/MapView"));
 const Map = React.lazy(() => import("./components/Map"));
-const ImageryBasemap = React.lazy(() => import("./components/BaseMap").then(module => ({default: module.ImageryBasemap})));
-const LightGreyBasemap = React.lazy(() => import("./components/BaseMap").then(module => ({default: module.LightGreyBasemap})));
+const ImageryBasemap = React.lazy(() =>
+    import("./components/BaseMap").then((module) => ({
+        default: module.ImageryBasemap,
+    }))
+);
+const LightGreyBasemap = React.lazy(() =>
+    import("./components/BaseMap").then((module) => ({
+        default: module.LightGreyBasemap,
+    }))
+);
 const FeatureLayer = React.lazy(() => import("./components/FeatureLayer"));
 const Locate = React.lazy(() => import("./components/Locate"));
 const Search = React.lazy(() => import("./components/Search"));
@@ -129,12 +137,12 @@ const App: React.FC = () => {
                     <MapView center={mapCenter} setCenter={setMapCenter}>
                         <Map>
                             <ImageryBasemap />
-                            <Locate position={"top-left"} />
+                            {/* <Locate position={"top-left"} />
                             <Search
                                 searchDiv={searchDivRef}
                                 popupEnabled={false}
-                            />
-                            {/* <TsunamiQueryHandler
+                            /> */}
+                            <TsunamiQueryHandler
                                 setZoneTitle={setZoneTitle}
                                 setZoneMessage={setZoneMessage}
                                 setZoneMessageTemplate={setZoneMessageTemplate}
@@ -143,12 +151,12 @@ const App: React.FC = () => {
                                 setQuerying={setQuerying}
                                 setAddress={setAddress}
                             >
-                                                        <Locate position={"top-left"} />
-                            <Search
-                                searchDiv={searchDivRef}
-                                popupEnabled={false}
-                            />
-                                <TsunamiFeatureLayer
+                                <Locate position={"top-left"} />
+                                <Search
+                                    searchDiv={searchDivRef}
+                                    popupEnabled={false}
+                                />
+                                {/* <TsunamiFeatureLayer
                                     url='https://services2.arcgis.com/RS7BXJAO6ksvblJm/arcgis/rest/services/Tsunami_Zones_Wellington_Region/FeatureServer/0'
                                     warningTemplate={WellingtonWarningTemplate}
                                 /> */}
@@ -172,8 +180,8 @@ const App: React.FC = () => {
                                 {/* <TsunamiFeatureLayer
                                     url='https://services.arcgis.com/hLRlshaEMEYQG5A8/arcgis/rest/services/West_Coast_Tsunami_Zone_Unauthoritative/FeatureServer/0'
                                     warningTemplate={WestCoastWarningTemplate}
-                                />
-                            </TsunamiQueryHandler> */}
+                                /> */}
+                            </TsunamiQueryHandler>
                             {/* <FeatureLayer url='https://services7.arcgis.com/jI87xPT7G1AGV8Uo/arcgis/rest/services/LINZ_NZ_Building_Outlines/FeatureServer' renderer={buildingsRenderer} /> */}
                         </Map>
                     </MapView>
