@@ -29,6 +29,7 @@ interface ITsunamiFeatureLayer {
         zoneMapping: IFeatureLayerZoneMapping & { url: string }
     ) => void;
     setLayer?: (layer: APIFeatureLayer) => void;
+    renderer?: __esri.RendererProperties;
 }
 
 const TsunamiFeatureLayer: React.FC<ITsunamiFeatureLayer> = ({
@@ -38,11 +39,12 @@ const TsunamiFeatureLayer: React.FC<ITsunamiFeatureLayer> = ({
     warningTemplate,
     setLayer,
     setWarningTemplate,
+    renderer
 }) => {
     useEffect(() => {
         setWarningTemplate && setWarningTemplate({ ...warningTemplate, url });
     }, []);
-    return <FeatureLayer url={url} setLayer={setLayer} map={map} />;
+    return <FeatureLayer url={url} setLayer={setLayer} map={map} renderer={renderer} />;
 };
 
 export default TsunamiFeatureLayer;

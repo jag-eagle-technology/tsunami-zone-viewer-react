@@ -1,5 +1,10 @@
 import React from "react";
 import { IFeatureLayerZoneMapping } from "../TsunamiFeatureLayer";
+import Color from "@arcgis/core/Color";
+import UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer";
+import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol";
+import logo from "../../logos/wremo-logo.svg";
+
 
 interface WellingtonAttributes {
     OBJECTID: number;
@@ -11,8 +16,8 @@ interface WellingtonAttributes {
     Info: string;
     Heights: string;
     Instruction: string;
-    "Shape__Area": number;
-    "Shape__Length": number;
+    Shape__Area: number;
+    Shape__Length: number;
 }
 
 const Template: React.FC<{ attributes: any }> = ({ attributes }) => {
@@ -27,6 +32,16 @@ const Template: React.FC<{ attributes: any }> = ({ attributes }) => {
     }, [attributes]);
     return (
         <div>
+            <div style={{ width: "100%" }}>
+                <img
+                    src={logo}
+                    style={{
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        display: "block",
+                    }}
+                ></img>
+            </div>
             <h2>Long or Strong? Get Gone!</h2>
             <p>
                 If you feel an earthquake that is either longer than a minute OR
@@ -71,5 +86,40 @@ const WellingtonWarningTemplate: IFeatureLayerZoneMapping = {
         },
     ],
 };
+
+export const Renderer = new UniqueValueRenderer({
+    // type: "unique-value",
+    field: "Col_Code",
+    defaultSymbol: { type: "simple-fill" } as __esri.SimpleFillSymbol,
+    uniqueValueInfos: [
+        {
+            value: "Yellow",
+            symbol: new SimpleFillSymbol({
+                color: new Color("rgba(241, 245, 0, 0.5)"),
+                outline: {
+                    style: "none",
+                },
+            }),
+        },
+        {
+            value: "Orange",
+            symbol: new SimpleFillSymbol({
+                color: new Color("rgba(245, 131, 0, 0.5)"),
+                outline: {
+                    style: "none",
+                },
+            }),
+        },
+        {
+            value: "Red",
+            symbol: new SimpleFillSymbol({
+                color: new Color("rgba(245, 0, 0, 0.5)"),
+                outline: {
+                    style: "none",
+                },
+            }),
+        },
+    ],
+});
 
 export default WellingtonWarningTemplate;

@@ -12,7 +12,7 @@ import Point from "@arcgis/core/geometry/Point";
 // import TsunamiQueryHandler from "./components/TsunamiQueryHandler";
 // import TsunamiFeatureLayer from "./components/TsunamiFeatureLayer";
 import WarningModal from "./components/WarningModal";
-import WellingtonWarningTemplate from "./components/WarningTemplates/WellingtonWarningTemplate";
+import WellingtonWarningTemplate, {Renderer as WellingtonRenderer} from "./components/WarningTemplates/WellingtonWarningTemplate";
 import WestCoastWarningTemplate from "./components/WarningTemplates/WestCoastWarningTemplate";
 import { MapCenterLocation } from "./components/MapView";
 const MapView = React.lazy(() => import("./components/MapView"));
@@ -159,6 +159,7 @@ const App: React.FC = () => {
                                 <TsunamiFeatureLayer
                                     url='https://services2.arcgis.com/RS7BXJAO6ksvblJm/arcgis/rest/services/Tsunami_Zones_Wellington_Region/FeatureServer/0'
                                     warningTemplate={WellingtonWarningTemplate}
+                                    renderer={WellingtonRenderer}
                                 />
                                 {/* <FeatureLayer url='https://services1.arcgis.com/n4yPwebTjJCmXB6W/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/0' />
                                 <FeatureLayer url='https://topofthesouthmaps.co.nz/arcgis/rest/services/DataHazards/MapServer/0' />
