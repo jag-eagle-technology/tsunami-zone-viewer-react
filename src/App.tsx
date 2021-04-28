@@ -129,7 +129,12 @@ const App: React.FC = () => {
                     <MapView center={mapCenter} setCenter={setMapCenter}>
                         <Map>
                             <ImageryBasemap />
-                            <TsunamiQueryHandler
+                            <Locate position={"top-left"} />
+                            <Search
+                                searchDiv={searchDivRef}
+                                popupEnabled={false}
+                            />
+                            {/* <TsunamiQueryHandler
                                 setZoneTitle={setZoneTitle}
                                 setZoneMessage={setZoneMessage}
                                 setZoneMessageTemplate={setZoneMessageTemplate}
@@ -138,15 +143,15 @@ const App: React.FC = () => {
                                 setQuerying={setQuerying}
                                 setAddress={setAddress}
                             >
-                                <Locate position={"top-left"} />
-                                {/* <Search
-                                    searchDiv={searchDivRef}
-                                    popupEnabled={false}
-                                /> */}
+                                                        <Locate position={"top-left"} />
+                            <Search
+                                searchDiv={searchDivRef}
+                                popupEnabled={false}
+                            />
                                 <TsunamiFeatureLayer
                                     url='https://services2.arcgis.com/RS7BXJAO6ksvblJm/arcgis/rest/services/Tsunami_Zones_Wellington_Region/FeatureServer/0'
                                     warningTemplate={WellingtonWarningTemplate}
-                                />
+                                /> */}
                                 {/* <FeatureLayer url='https://services1.arcgis.com/n4yPwebTjJCmXB6W/arcgis/rest/services/Tsunami_Evacuation_Zones/FeatureServer/0' />
                                 <FeatureLayer url='https://topofthesouthmaps.co.nz/arcgis/rest/services/DataHazards/MapServer/0' />
                                 <FeatureLayer url='https://services7.arcgis.com/8G10QCd84QpdcTJ9/arcgis/rest/services/evacuation_areas/FeatureServer/1' />
@@ -164,11 +169,11 @@ const App: React.FC = () => {
                                     url='https://gis.westcoast.govt.nz/arcgis/rest/services/EmergencyManagementAndHazards/TsunamiEvacuationZones/MapServer/0'
                                     warningTemplate={WestCoastWarningTemplate}
                                 /> */}
-                                <TsunamiFeatureLayer
+                                {/* <TsunamiFeatureLayer
                                     url='https://services.arcgis.com/hLRlshaEMEYQG5A8/arcgis/rest/services/West_Coast_Tsunami_Zone_Unauthoritative/FeatureServer/0'
                                     warningTemplate={WestCoastWarningTemplate}
                                 />
-                            </TsunamiQueryHandler>
+                            </TsunamiQueryHandler> */}
                             {/* <FeatureLayer url='https://services7.arcgis.com/jI87xPT7G1AGV8Uo/arcgis/rest/services/LINZ_NZ_Building_Outlines/FeatureServer' renderer={buildingsRenderer} /> */}
                         </Map>
                     </MapView>
