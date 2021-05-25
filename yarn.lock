@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@arcgis/core@4.19.1":
-  version "4.19.1"
-  resolved "https://registry.yarnpkg.com/@arcgis/core/-/core-4.19.1.tgz#67a5578aad4275d475b5a22162523a8095dc71d8"
-  integrity sha512-H7OWfmwbq/xzfVaaL25bX4gCggMrmoatK3MgEwyJQJ97IDbxpouTfM73idpBV3wN6CUe/gHqfi73qkfIdAOaTA==
+"@arcgis/core@^4.19.3":
+  version "4.19.3"
+  resolved "https://registry.yarnpkg.com/@arcgis/core/-/core-4.19.3.tgz#841fbcedc7f55d0f87735a270589dcb086589eb7"
+  integrity sha512-dDNpp8fG09ZkyKlDcJmDaVRQHSRyw7hoOA8WvdmjZ8uRyppmPYrIgbFc/+Dd4RXsZFxClwu0qOzO46+jl24NWg==
   dependencies:
     "@esri/arcgis-html-sanitizer" "~2.5.0"
     "@esri/calcite-colors" "~5.0.0"
